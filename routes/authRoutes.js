@@ -1,9 +1,9 @@
 import router from "./_imports.js";
-import UsersSchema from "../models/UsersSchema.js";
+import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-/* import auth from "../middlewares/auth.js"; */
+import auth from "../middlewares/auth.js";
 dotenv.config();
 
 const createToken = (user, secret, expiresIn) => {
@@ -18,7 +18,7 @@ const createToken = (user, secret, expiresIn) => {
 router.post("/login", async (req, res) => {
   try {
     const { emailOrPhone, password } = req.body;
-    const user = await UsersSchema.findOne({
+    const user = await User.findOne({
       $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
     });
 
@@ -80,7 +80,7 @@ router.post("/register", async (req, res) => {
       sector,
     } = req.body;
 
-    if (await UsersSchema.findOne({ email })) {
+    if (await User.findOne({ email })) {
       return res.status(400).json({
         status: "false",
         isEmailRegistered: true,
@@ -89,8 +89,8 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    if (!(await UsersSchema.findOne({ email }))) {
-      if (await UsersSchema.findOne({ phone })) {
+    if (!(await User.findOne({ email }))) {
+      if (await User.findOne({ phone })) {
         return res.status(400).json({
           status: "false",
           isEmailRegistered: false,
@@ -100,7 +100,7 @@ router.post("/register", async (req, res) => {
       }
       const rounds = 10;
       const hash = await bcrypt.hash(password, rounds);
-      const newUser = new UsersSchema({
+      const newUser = new User({
         firstName,
         lastName,
         email,
@@ -139,7 +139,7 @@ router.post("/refresh", async (req, res) => {
   try {
     const { token } = req.body;
 
-    const user = await UsersSchema.findOne({ refreshToken: token });
+    const user = await User.findOne({ refreshToken: token });
 
     if (user) {
       const isVerified = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
@@ -179,9 +179,9 @@ router.post("/refresh", async (req, res) => {
   }
 });
 
-router.post("/logout", async (req, res) => {
+router.post("/logout",auth, async (req, res) => {
   const { token } = req.body;
-  const user = await UsersSchema.findOne({ refreshToken: token });
+  const user = await User.findOne({ refreshToken: token });
   if (!user) {
     return res.status(401).json({ success: false, message: "İzniniz yok." });
   }

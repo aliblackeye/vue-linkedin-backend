@@ -5,15 +5,20 @@ const UserSchema = new mongoose.Schema(
     firstName: {
       type: String,
       required: true,
+      min: 2,
+      max: 50,
     },
     lastName: {
       type: String,
       required: true,
+      min: 2,
+      max: 50,
     },
     email: {
       type: String,
       unique: true,
       required: true,
+      max: 50,
     },
     phone: {
       type: String,
@@ -23,6 +28,7 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      min: 8,
     },
     jobTitle: {
       type: String,
@@ -30,7 +36,7 @@ const UserSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      required: false,
+      default: "",
     },
     roles: {
       type: Array,
@@ -43,6 +49,13 @@ const UserSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
       required: false,
+    },
+    connections: {
+      type: Array,
+      default: [],
+    },
+    location: {
+      type: String,
     },
   },
   { timestamps: true }
