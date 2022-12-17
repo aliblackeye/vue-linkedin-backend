@@ -81,16 +81,22 @@ router.post("/register", async (req, res) => {
     } = req.body;
 
     if (await UsersSchema.findOne({ email })) {
-      return res
-        .status(400)
-        .json({ message: "Bu e-posta adresi zaten kullanılıyor." });
+      return res.status(400).json({
+        status: "false",
+        isEmailRegistered: true,
+        isPhoneRegistered: false,
+        message: "Bu e-posta adresi zaten kullanılıyor.",
+      });
     }
 
     if (!(await UsersSchema.findOne({ email }))) {
       if (await UsersSchema.findOne({ phone })) {
-        return res
-          .status(400)
-          .json({ message: "Telefon numarası zaten kullanılıyor." });
+        return res.status(400).json({
+          status: "false",
+          isEmailRegistered: false,
+          isPhoneRegistered: true,
+          message: "Bu telefon numarası zaten kullanılıyor.",
+        });
       }
       const rounds = 10;
       const hash = await bcrypt.hash(password, rounds);
@@ -108,14 +114,20 @@ router.post("/register", async (req, res) => {
       newUser.save((e) => {
         if (e) {
           console.log("Kullanıcı kayıt edilemedi.");
-          return res.status(500).json({ message: "Server error" });
+          return res
+            .status(500)
+            .json({ success: false, message: "Server error" });
         }
-        return res.status(200).json({ message: "Kayıt başarılı." });
+        return res
+          .status(200)
+          .json({ success: false, message: "Kayıt başarılı." });
       });
 
       if (!hash) {
         console.log("Hash oluşturulamadı.");
-        return res.status(500).json({ message: "Server error" });
+        return res
+          .status(500)
+          .json({ success: false, message: "Server error" });
       }
     }
   } catch (e) {
