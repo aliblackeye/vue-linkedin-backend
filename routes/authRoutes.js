@@ -179,15 +179,21 @@ router.post("/refresh", async (req, res) => {
   }
 });
 
-router.post("/logout",auth, async (req, res) => {
-  const { token } = req.body;
-  const user = await User.findOne({ refreshToken: token });
-  if (!user) {
-    return res.status(401).json({ success: false, message: "İzniniz yok." });
+router.post("/logout", auth, async (req, res) => {
+  try {
+    const { token } = req.body;
+    const user = await User.findOne({ refreshToken: token });
+    if (!user) {
+      return res.status(401).json({ success: false, message: "İzniniz yok." });
+    }
+    console.log("Çıkış başarılı.");
+    await user.updateOne({ refreshToken: "" });
+    return res.status(200).json({ success: true, message: "Çıkış başarılı." });
+  } catch (error) {
+    return res
+      .status(200)
+      .json({ success: false, message: "Bir hata oluştu. Çıkış başarısız." });
   }
-  console.log("Çıkış başarılı.");
-  await user.updateOne({ refreshToken: "" });
-  return res.status(200).json({ success: true, message: "Çıkış başarılı." });
 });
 
 export default router;
