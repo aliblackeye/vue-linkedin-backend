@@ -4,6 +4,7 @@ dotenv.config();
 
 export default async (req, res, next) => {
   let token;
+  console.log("7.satır");
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -16,5 +17,8 @@ export default async (req, res, next) => {
     } catch (error) {
       res.status(401).json({ message: "Yetkilendirilemedi." });
     }
+  } else {
+    console.log("else bloğu")
+    res.status(401).json({ message: "Yetkilendirilemedi." });
   }
 };
