@@ -14,7 +14,6 @@ const createToken = (user, secret, expiresIn) => {
   );
 };
 
-// Login
 router.post("/login", async (req, res) => {
   try {
     const { emailOrPhone, password } = req.body;
@@ -35,7 +34,7 @@ router.post("/login", async (req, res) => {
       }
       const accessToken = createToken(user, process.env.JWT_SECRET, "15m");
 
-      req.headers["Authorization"] = `Bearer ${accessToken}`;
+      req.headers.authorization = `Bearer ${accessToken}`;
       const refreshToken = createToken(user, process.env.JWT_REFRESH_SECRET);
 
       await user.updateOne({ refreshToken: refreshToken });
@@ -152,7 +151,7 @@ router.post("/refresh", async (req, res) => {
 
       const newAccessToken = createToken(user, process.env.JWT_SECRET, "15m");
 
-      req.headers["Authorization"] = `Bearer ${newAccessToken}`;
+      req.headers.authorization = `Bearer ${newAccessToken}`;
 
       const newRefreshToken = createToken(user, process.env.JWT_REFRESH_SECRET);
 

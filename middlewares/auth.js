@@ -3,13 +3,18 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default async (req, res, next) => {
-  try {
-    let token = await req.headers["Authorization"].split(" ")[1];
-    if (!token) return res.status(403).json({ message: "Erişim reddedildi!" });
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Yetkilendirilemedi." });
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Yetkilendirilemedi." });
+    }
   }
 };
