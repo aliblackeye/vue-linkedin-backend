@@ -178,7 +178,7 @@ router.post("/refresh", async (req, res) => {
   }
 });
 
-router.post("/logout", auth, async (req, res) => {
+router.post("/logout",/*  auth, */ async (req, res) => {
   try {
     const { token } = req.body;
     const user = await User.findOne({ refreshToken: token });

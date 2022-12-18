@@ -4,7 +4,7 @@ import { admin, user } from "../middlewares/roles.js";
 import auth from "../middlewares/auth.js";
 
 // Get Users for Search
-router.get("/", auth, user, async (req, res) => {
+router.get("/", /* auth */ user, async (req, res) => {
   try {
     const { search } = req.query;
     const queryMethods = { $regex: search, $options: "i" };
@@ -20,7 +20,7 @@ router.get("/", auth, user, async (req, res) => {
 });
 
 // Get User by Id
-router.get("/list/:id", auth, admin, async (req, res) => {
+router.get("/list/:id", /* auth */ admin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -34,7 +34,7 @@ router.get("/list/:id", auth, admin, async (req, res) => {
 });
 
 // Get Users
-router.get("/list", auth, admin, async (req, res) => {
+router.get("/list", /* auth */ admin, async (req, res) => {
   try {
     const users = await User.find();
     return res.status(200).json({ users });
